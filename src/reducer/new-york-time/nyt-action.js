@@ -1,14 +1,21 @@
 import * as TYPE from "./nyt-type";
 
-export const FectDataStart = () => {
+export const FectApiStart = () => {
   return {
-    type: TYPE.FECTH_DATA_START
+    type: TYPE.FECTH_API_START
   };
 };
 
-export const FetchDataSuccess = data => {
+export const FetchApiSuccess = data => {
   return {
-    type: TYPE.FECTH_DATA_SUCCESS,
+    type: TYPE.FECTH_API_SUCCESS,
     payload: data
   };
 };
+
+export const FetchApiFalure = message => {
+  return {
+    type: TYPE.FECTH_API_FAILURE,
+    payload: message
+  }
+}

@@ -6,7 +6,7 @@ const INITIAL_STATE = {
 
 export default function(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case TYPE.FECTH_DATA_SUCCESS:
+    case TYPE.FECTH_API_SUCCESS:
       return {
         ...state,
         data: action.payload
