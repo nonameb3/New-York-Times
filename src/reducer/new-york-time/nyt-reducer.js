@@ -1,7 +1,8 @@
 import * as TYPE from "./nyt-type";
 
 const INITIAL_STATE = {
-  data: []
+  isLoading: true,
+  articles: []
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -9,8 +10,15 @@ export default function(state = INITIAL_STATE, action) {
     case TYPE.FECTH_API_SUCCESS:
       return {
         ...state,
-        data: action.payload
-      }
+        articles: action.payload,
+        isLoading: false
+      };
+    case TYPE.FECTH_API_FAILURE:
+      return {
+        ...state,
+        articles: [],
+        isLoading: false
+      };
     default:
       return state;
   }
