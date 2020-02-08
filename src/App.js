@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
-          <Route to='/' render={Homepage} />
+          <Route to='/' component={Homepage} />
         </Switch>
       </Suspense>
     </BrowserRouter>
