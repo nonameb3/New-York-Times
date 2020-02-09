@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from 'react-router-dom';
 import "./homepage.style.scss";
 
 import { FectApiStart } from "../../reducer/new-york-time/nyt-action";
 import CardItem from "../../components/cardItem/cardItem.componens";
 
+function filter(article, searchInput) {
+  if (!searchInput) return article;
+  return article.headline.main.toLowerCase().search(searchInput) !== -1;
+}
+
 function sort(a, b, newFrist = false) {
   if (a.props.date < b.props.date) {
     return newFrist ? 1 : -1;
   }
-  if (a.props.date > b.props.date) {
+  else if (a.props.date > b.props.date) {
     return newFrist ? -1 : 1;
   }
   return 0;
@@ -18,8 +24,11 @@ function sort(a, b, newFrist = false) {
 function HomepageComponent() {
   const [searchInput, setSearchInput] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+
   const dispatch = useDispatch();
   const { isLoading, articles } = useSelector(state => state.nytData);
+
+  const history = useHistory();
 
   // role same as compoentDidmount
   useEffect(() => {
@@ -28,7 +37,6 @@ function HomepageComponent() {
 
   return (
     <div className='homepage'>
-      <h1>New York Times</h1>
       <div className='tools'>
         <input type='text' onChange={e => setSearchInput(e.target.value)} />
         <div className='tools radio' onChange={e => setSortBy(e.target.value)}>
@@ -47,12 +55,7 @@ function HomepageComponent() {
           <div>Loading</div>
         ) : (
           articles
-            .filter(article => {
-              if (!searchInput) return article;
-              return (
-                article.headline.main.toLowerCase().search(searchInput) !== -1
-              );
-            })
+            .filter(article => filter(article, searchInput))
             .map(article => {
               let imageUrl;
               // find image url
@@ -73,6 +76,7 @@ function HomepageComponent() {
                   date={article.pub_date}
                   source={article.source}
                   info={article.snippet}
+                  onClick={() => history.push(`/detail?id=${article._id}`)}
                 />
               );
             })

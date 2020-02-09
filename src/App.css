@@ -8,3 +8,7 @@ body {
   margin-right: auto;
   margin-bottom: 0;
 }
+
+h1.header {
+  text-align: center;
+}

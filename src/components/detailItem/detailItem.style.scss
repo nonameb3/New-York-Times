@@ -1,0 +1,25 @@
+.detail-container {
+  margin: auto;
+  width: 60%;
+
+  @media screen and(max-width: 600px) {
+    width: 95%;
+  }
+
+  @media (min-width: 600px) and (max-width: 1024px) {
+    width: 85%;
+  }
+
+  .detail-main-image {
+    text-align: center;
+
+    img {
+      max-width: 1024px;
+
+      @media screen and(max-width: 990px) {
+        width: 100%;
+      }
+    }
+  }
+  
+}

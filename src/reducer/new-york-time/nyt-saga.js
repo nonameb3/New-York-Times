@@ -6,7 +6,7 @@ import * as TYPE from './nyt-type';
 
 export function* apiProcess() {
   try {
-    const apiKey= process.env.REACT_APP_APIKEY;
+    const apiKey = process.env.REACT_APP_APIKEY;
     const url = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&api-key=${apiKey}&sort=newest`
     const response = yield axios.get(url);
     const data = response.data.response.docs;
