@@ -4,6 +4,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import queryString from "query-string";
 import './detail.style.scss';
 
+import { selectArticles, selectIsLoading } from '../../reducer/new-york-time/nyt-selector';
 import DetailItem from "../../components/detailItem/detailItem.component";
 
 function findImageUrl(article) {
@@ -18,9 +19,12 @@ function findImageUrl(article) {
 }
 
 function DetailComponent() {
-  const { isLoading, articles } = useSelector(state => state.nytData);
   const history = useHistory();
   const location = useLocation();
+  const { isLoading, articles } = useSelector(state => ({
+    isLoading: selectIsLoading(state),
+    articles: selectArticles(state)
+  }));
   const values = queryString.parse(location.search);
   const article = articles.find(article => article._id === values.id);
 

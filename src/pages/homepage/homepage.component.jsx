@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import "./homepage.style.scss";
 
 import { FectApiStart } from "../../reducer/new-york-time/nyt-action";
+import { selectArticles, selectIsLoading } from "../../reducer/new-york-time/nyt-selector";
 import CardItem from "../../components/cardItem/cardItem.componens";
 
 function filter(article, searchInput) {
@@ -20,14 +21,26 @@ function sort(a, b, newFrist = false) {
   return 0;
 }
 
+function findImageUrl(article) {
+  if (!article) return null;
+
+  if (article.multimedia && article.multimedia.length) {
+    const multimedia = article.multimedia.find(
+      media => media.subtype === "tmagArticle"
+    );
+    return multimedia ? `https://static01.nyt.com/${multimedia.url}` : null;
+  }
+}
+
 function HomepageComponent() {
   const [searchInput, setSearchInput] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-
   const dispatch = useDispatch();
-  const { isLoading, articles } = useSelector(state => state.nytData);
-
   const history = useHistory();
+  const { isLoading, articles } = useSelector(state => ({
+    isLoading: selectIsLoading(state),
+    articles: selectArticles(state)
+  }));
 
   // role same as compoentDidmount
   useEffect(() => {
@@ -58,30 +71,17 @@ function HomepageComponent() {
         ) : (
           articles
             .filter(article => filter(article, searchInput))
-            .map(article => {
-              let imageUrl;
-              // find image url
-              if (article.multimedia.length) {
-                const multimedia = article.multimedia.find(
-                  media => media.subtype === "tmagArticle"
-                );
-                imageUrl = multimedia
-                  ? `https://static01.nyt.com/${multimedia.url}`
-                  : null;
-              }
-
-              return (
-                <CardItem
-                  key={article._id}
-                  image={imageUrl}
-                  header={article.headline.main}
-                  date={article.pub_date}
-                  source={article.source}
-                  info={article.snippet}
-                  onClick={() => history.push(`/detail?id=${article._id}`)}
-                />
-              );
-            })
+            .map(article => (
+              <CardItem
+                key={article._id}
+                image={findImageUrl(article)}
+                header={article.headline.main}
+                date={article.pub_date}
+                source={article.source}
+                info={article.snippet}
+                onClick={() => history.push(`/detail?id=${article._id}`)}
+              />
+            ))
             .sort((a, b) => sort(a, b, sortBy === "newest"))
         )}
       </div>

@@ -22,7 +22,7 @@ function DetailItemComponent(props) {
         </h4>
         <p>{abstract}</p>
         <p>{paragraph}</p>
-        <a href={`${webUrl}`} target="_blank">Click to read on New York Times.</a>
+        <a href={`${webUrl}`} target="_blank" rel="noopener noreferrer">Click to read on New York Times.</a>
         <p className='detail footer'>
           Source by: {source}
           <span>{original}</span>
