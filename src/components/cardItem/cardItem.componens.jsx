@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import 'moment/locale/th';
 import "./carditem.style.scss";
 
 function cardItemComponens({ image, header, date, source, info, onClick }) {

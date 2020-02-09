@@ -8,8 +8,8 @@ const DetailPage = React.lazy(() => import("./pages/detail/detail.component"));
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
-        <h1 className="header">New York Times</h1>
+      <h1 className='header'>New York Times</h1>
+      <Suspense fallback={<div style={{textAlign:"center"}}>Loading...</div>}>
         <Switch>
           <Route exact path='/' component={Homepage} />
           <Route path='/detail' component={DetailPage} />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import "./homepage.style.scss";
 
 import { FectApiStart } from "../../reducer/new-york-time/nyt-action";
@@ -14,8 +14,7 @@ function filter(article, searchInput) {
 function sort(a, b, newFrist = false) {
   if (a.props.date < b.props.date) {
     return newFrist ? 1 : -1;
-  }
-  else if (a.props.date > b.props.date) {
+  } else if (a.props.date > b.props.date) {
     return newFrist ? -1 : 1;
   }
   return 0;
@@ -52,7 +51,10 @@ function HomepageComponent() {
       </div>
       <div className='items-container'>
         {isLoading ? (
-          <div>Loading</div>
+          <i
+            className='fa fa-spinner fa-spin'
+            style={{ fontSize: "2rem", marginTop: "5rem" }}
+          />
         ) : (
           articles
             .filter(article => filter(article, searchInput))

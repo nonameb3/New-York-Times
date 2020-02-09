@@ -1,0 +1,20 @@
+.detail-page {
+  i {
+    font-size: 250%;
+    color: yellowgreen;
+    position: fixed;
+    left: 7%;
+    cursor: pointer;
+
+    @media screen and(max-width: 600px) {
+      left: 3%;
+    }
+
+    @media screen and(min-width: 1366px) {
+      left: 22%;
+    }
+  }
+  i:hover {
+   font-weight: bold;
+  }
+}

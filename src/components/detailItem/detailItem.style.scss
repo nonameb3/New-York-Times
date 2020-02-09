@@ -1,6 +1,6 @@
 .detail-container {
   margin: auto;
-  width: 60%;
+  width: 55%;
 
   @media screen and(max-width: 600px) {
     width: 95%;
@@ -14,12 +14,51 @@
     text-align: center;
 
     img {
-      max-width: 1024px;
+      max-width: 500px;
 
       @media screen and(max-width: 990px) {
         width: 100%;
       }
     }
   }
-  
+
+  .detail-content {
+          
+    a:link {
+      color: rgb(47, 105, 47);
+      text-decoration: none;
+      font-weight: 400;
+      font-style: italic;
+    }
+    
+    a:visited {
+      color: rgb(47, 105, 47);
+      text-decoration: none;
+    }
+
+    a:hover {
+      font-weight: bold;
+    }
+
+    .header {
+      font: initial;
+      font-size: larger;
+      font-style: italic;
+
+      &.date {
+        font-weight: lighter;
+        font-size: medium;
+      }
+    }
+    
+    .detail.footer {
+      font: initial;
+      font-size: medium;
+      font-style: italic;
+
+      span {
+        display: inherit;
+      }
+    }
+  }
 }
