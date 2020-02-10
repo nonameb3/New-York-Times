@@ -1,24 +1,21 @@
-import React, { Suspense } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import React from "react";
 import "./App.css";
 
-import Homepage from "./pages/homepage/homepage.component";
-const DetailPage = React.lazy(() => import("./pages/detail/detail.component"));
+import Router from "./Router";
 
 function App() {
   return (
-    <BrowserRouter>
-      <h1 className='header'>New York Times</h1>
-      <Suspense fallback={<div style={{textAlign:"center"}}>Loading...</div>}>
-        <Switch>
-          <Route exact path='/' component={Homepage} />
-          <Route path='/detail' component={DetailPage} />
-        </Switch>
-      </Suspense>
-      <div className="main-footer">
+    <React.Fragment>
+      <div className='main-header'>
+        <h1>New York Times</h1>
+      </div>
+      <div className='main-content'>
+        <Router />
+      </div>
+      <div className='main-footer'>
         <p>© DVELOPER WARAPHON ROONNAPAI - 2020</p>
       </div>
-    </BrowserRouter>
+    </React.Fragment>
   );
 }
 
