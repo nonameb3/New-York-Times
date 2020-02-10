@@ -15,6 +15,9 @@ function App() {
           <Route path='/detail' component={DetailPage} />
         </Switch>
       </Suspense>
+      <div className="main-footer">
+        <p>© DVELOPER WARAPHON ROONNAPAI - 2020</p>
+      </div>
     </BrowserRouter>
   );
 }

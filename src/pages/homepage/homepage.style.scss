@@ -5,25 +5,43 @@
     display: block;
     text-align: center;
 
-    &.radio {
-      margin: 5px;
+    .search-icon {
+      font-size: 120%;
+      margin-right: 5px;
+      margin-left: -13px;
     }
     
-    input[type="text"] {
+    input[type="search"] {
       border: 1.5px solid green;
       padding-left: 5px;
       border-radius: 5px;
-      height: 20px;
+      height: 27px;
       font-size: 16px;
-      width: 220px;
+      width: 150px;
+      transition: all .3s;
     }
 
-    input[type="text"]:focus {
+    input[type="search"]:focus {
       outline: none !important;
       border: 2px solid green;
       border-radius: 5px;
-      height: 23px;
-      font-size: 17px;
+      height: 27px;
+      font-size: 16px;
+      width: 250px;
+    }
+
+    &.select {
+      label {
+        font-size: larger;
+        margin: 5px;
+        display: unset;
+        transition: all .2s;
+        cursor: pointer;
+
+        &.active {
+          text-shadow: 0 0 0.2em rgb(86, 217, 221), 0 0 0.2em rgb(44, 151, 44);
+        }
+      }
     }
   }
 

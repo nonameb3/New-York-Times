@@ -4,7 +4,10 @@ import { useHistory } from "react-router-dom";
 import "./homepage.style.scss";
 
 import { FectApiStart } from "../../reducer/new-york-time/nyt-action";
-import { selectArticles, selectIsLoading } from "../../reducer/new-york-time/nyt-selector";
+import {
+  selectArticles,
+  selectIsLoading
+} from "../../reducer/new-york-time/nyt-selector";
 import CardItem from "../../components/cardItem/cardItem.componens";
 
 function filter(article, searchInput) {
@@ -32,9 +35,11 @@ function findImageUrl(article) {
   }
 }
 
+const initNewest = 'newest';
+const initOldest = 'oldest';
 function HomepageComponent() {
   const [searchInput, setSearchInput] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState(initNewest);
   const dispatch = useDispatch();
   const history = useHistory();
   const { isLoading, articles } = useSelector(state => ({
@@ -50,15 +55,18 @@ function HomepageComponent() {
   return (
     <div className='homepage'>
       <div className='tools'>
-        <input type='text' onChange={e => setSearchInput(e.target.value)} />
-        <div className='tools radio' onChange={e => setSortBy(e.target.value)}>
-          <label className='radio'>
-            <input type='radio' name='radio' value='newest' defaultChecked />
-            <span>Newest</span>
+        <i className='fa fa-search search-icon'></i>
+        <input type='search' onChange={e => setSearchInput(e.target.value)} />
+        <div className='tools select'>
+          <label
+            className={`tools select ${sortBy === "newest" ? "active" : null}`}
+            onClick={() => setSortBy(initNewest)}>
+            Newest
           </label>
-          <label className='radio'>
-            <input type='radio' name='radio' value='oldest' />
-            <span>Oldest</span>
+          <label
+            className={`tools select ${sortBy !== "newest" ? "active" : null}`}
+            onClick={() => setSortBy(initOldest)}>
+            Oldest
           </label>
         </div>
       </div>
@@ -82,7 +90,7 @@ function HomepageComponent() {
                 onClick={() => history.push(`/detail?id=${article._id}`)}
               />
             ))
-            .sort((a, b) => sort(a, b, sortBy === "newest"))
+            .sort((a, b) => sort(a, b, sortBy === initNewest))
         )}
       </div>
     </div>
