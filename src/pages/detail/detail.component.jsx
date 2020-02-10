@@ -6,17 +6,7 @@ import './detail.style.scss';
 
 import { selectArticles, selectIsLoading } from '../../reducer/new-york-time/nyt-selector';
 import DetailItem from "../../components/detailItem/detailItem.component";
-
-function findImageUrl(article) {
-  if(!article) return null;
-
-  if (article.multimedia && article.multimedia.length) {
-    const multimedia = article.multimedia.find(
-      media => media.subtype === "tmagArticle"
-    );
-    return multimedia ? `https://static01.nyt.com/${multimedia.url}` : null;
-  }
-}
+import { findImageUrl } from './detail.utill';
 
 function DetailComponent() {
   const history = useHistory();

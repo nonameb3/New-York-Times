@@ -1,8 +1,9 @@
 import * as TYPE from "./nyt-type";
 
-export const FectApiStart = () => {
+export const FetchApiStart = searchString => {
   return {
-    type: TYPE.FECTH_API_START
+    type: TYPE.FECTH_API_START,
+    payload: searchString
   };
 };
 

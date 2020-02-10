@@ -40,7 +40,7 @@ function DetailItemComponent(props) {
           <span className='header date'> - {dateString}</span>
         </h4>
         <p>{abstract}</p>
-        <p>{paragraph}</p>
+        <p>{paragraph === abstract ? null : paragraph}</p>
         {shouldRenderHyperlink(webUrl)}
         <p className='detail footer'>
           Source by: {source}
