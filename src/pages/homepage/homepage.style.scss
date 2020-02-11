@@ -1,15 +1,23 @@
 .homepage {
   .tools {
-    margin: 5px;
+    margin: 0 0 5px 0;
     overflow-x: auto;
     display: block;
     text-align: center;
 
-    .search-icon {
-      font-size: 120%;
-      margin-right: 5px;
-      margin-left: -13px;
+    &.search-box {
+      & label {
+        display: block;
+        margin: 0 0 5px 0;
+      }
+
+      .search-icon {
+        font-size: 120%;
+        margin-right: 5px;
+        margin-left: -13px;
+      }
     }
+
     
     input[type="search"] {
       border: 1.5px solid green;

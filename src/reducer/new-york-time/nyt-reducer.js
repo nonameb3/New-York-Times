@@ -2,6 +2,11 @@ import * as TYPE from "./nyt-type";
 
 const INITIAL_STATE = {
   isLoading: false,
+  isFetchData: false,
+  searchOption: {
+    searchString:"",
+    option:"newest" 
+  },
   articles: []
 };
 
@@ -10,13 +15,15 @@ export default function(state = INITIAL_STATE, action) {
     case TYPE.FECTH_API_START:
       return {
         ...state,
-        isLoading: true
+        isLoading: true,
+        searchOption: action.payload
       }
     case TYPE.FECTH_API_SUCCESS:
       return {
         ...state,
         articles: action.payload,
-        isLoading: false
+        isLoading: false,
+        isFetchData: true
       };
     case TYPE.FECTH_API_FAILURE:
       return {

@@ -27,8 +27,8 @@ function* apiProcess({ payload }) {
       facet_fields: "source",
       facet_filter: "true",
       fq: `document_type:("article")`,
-      q: payload,
-      sort: "newest",
+      q: payload.searchString,
+      sort: payload.option || "newest",
       "api-key": NYT_API_KEY
     };
     url += `?${buildURLQuery(query)}`;
@@ -44,7 +44,7 @@ function* apiProcess({ payload }) {
 // handle saga function
 function* onFetchApiStart() {
   yield takeLatest(TYPE.FECTH_API_START, function*(props) {
-    yield delay(500);
+    yield delay(1000);
     yield apiProcess(props);
   });
 }

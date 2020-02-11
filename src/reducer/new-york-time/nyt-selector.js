@@ -6,4 +6,6 @@ export const selectArticles = createSelector([nytData], nytData => nytData.artic
 
 export const selectIsLoading = createSelector([nytData], nytData => nytData.isLoading);
 
-export const selectSearchString = createSelector([nytData], nytData => nytData.searchString);
+export const selectIsFetchData = createSelector([nytData], nytData => nytData.isFetchData);
+
+export const selectSearchOption = createSelector([nytData], nytData => nytData.searchOption);

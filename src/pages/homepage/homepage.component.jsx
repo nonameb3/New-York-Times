@@ -1,17 +1,20 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import "./homepage.style.scss";
 
 import { NYT_API_KEY } from "../../Config";
 import { FetchApiStart } from "../../reducer/new-york-time/nyt-action";
 import {
+  selectSearchOption,
   selectArticles,
   selectIsLoading
 } from "../../reducer/new-york-time/nyt-selector";
 import CardItem from "../../components/cardItem/cardItem.componens";
 import LoadingIcon from "../../components/loadingIcon/loadingIcon";
-import { sort, findImageUrl } from "./homepage.utill";
+import { findImageUrl } from "./homepage.utill";
 
 function shouldRenderWarning(isDevmode = false) {
   if (!isDevmode) return;
@@ -21,7 +24,7 @@ function shouldRenderWarning(isDevmode = false) {
   );
 }
 
-function shouldRenderCartItem(articles = [], history, sortBy) {
+function shouldRenderCartItem(articles = [], history) {
   if (!articles.length) return <div>Not have any articles.</div>;
 
   return articles
@@ -36,58 +39,42 @@ function shouldRenderCartItem(articles = [], history, sortBy) {
         onClick={() => history.push(`/detail?id=${article._id}`)}
       />
     ))
-    .sort((a, b) => sort(a, b, sortBy === initNewest));
 }
 
 const initNewest = "newest";
 const initOldest = "oldest";
-const initalState = {
-  searchString: "",
-  sortBy: initNewest
-};
 function HomepageComponent() {
-  const [state, setState] = useState(initalState);
-  const isFirstRun = useRef(true);
   const history = useHistory();
   const dispatch = useDispatch();
-  const { isLoading, articles } = useSelector(state => ({
+  const { isLoading, articles, searchOption } = useSelector(state => ({
     isLoading: selectIsLoading(state),
-    articles: selectArticles(state)
+    articles: selectArticles(state),
+    searchOption: selectSearchOption(state)
   }));
+  const [state, setState] = useState({
+    searchString: searchOption.searchString,
+    sortBy: searchOption.option
+  });
 
   // rold same as componentDidMount + componentDiDUpdate
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      const sessionSearchString = window.sessionStorage.getItem("search");
-      const sessionOption = window.sessionStorage.getItem("option");
-      setState({
-        searchString: sessionSearchString,
-        sortBy: sessionOption
-      });
-      if (sessionSearchString === state.searchString) {
-        dispatch(FetchApiStart(state.searchString));
-      }
-      return;
-    }
-
-    dispatch(FetchApiStart(state.searchString));
-  }, [dispatch, state.searchString]);
-
-  useEffect(() => {
-    window.sessionStorage.setItem("search", state.searchString);
-    window.sessionStorage.setItem("option", state.sortBy);
-  }, [state]);
+    dispatch(FetchApiStart(state.searchString, state.sortBy));
+  }, [dispatch, state]);
 
   return (
     <div className='homepage'>
       <div className='tools'>
-        <i className='fa fa-search search-icon'></i>
-        <input
-          type='search'
-          onChange={e => setState({ ...state, searchString: e.target.value })}
-          value={state.searchString}
-        />
+        <div className="tools search-box">
+          <label htmlFor="search">Search</label>
+          <FontAwesomeIcon icon ={faSearch} className="search-icon"/>
+          <input
+            id="search"
+            type='search'
+            onChange={e => setState({ ...state, searchString: e.target.value })}
+            value={state.searchString}
+          />
+        </div>
+
         <div className='tools select'>
           <label
             className={`tools select ${
@@ -110,7 +97,7 @@ function HomepageComponent() {
         {isLoading ? (
           <LoadingIcon style={{ fontSize: "2rem", marginTop: "5rem" }} />
         ) : (
-          shouldRenderCartItem(articles, history, state.sortBy)
+          shouldRenderCartItem(articles, history)
         )}
       </div>
     </div>

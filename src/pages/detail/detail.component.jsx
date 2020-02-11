@@ -1,31 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
-import './detail.style.scss';
+import "./detail.style.scss";
 
-import { selectArticles, selectIsLoading } from '../../reducer/new-york-time/nyt-selector';
+import {
+  selectArticles,
+  selectIsFetchData
+} from "../../reducer/new-york-time/nyt-selector";
 import DetailItem from "../../components/detailItem/detailItem.component";
-import { findImageUrl } from './detail.utill';
+import { findImageUrl } from "./detail.utill";
 
 function DetailComponent() {
   const history = useHistory();
   const location = useLocation();
-  const { isLoading, articles } = useSelector(state => ({
-    isLoading: selectIsLoading(state),
+  const { isFetchData, articles } = useSelector(state => ({
+    isFetchData: selectIsFetchData(state),
     articles: selectArticles(state)
   }));
   const values = queryString.parse(location.search);
   const article = articles.find(article => article._id === values.id);
 
   // return to homepage if not fetch api or can't find articles
-  if(isLoading || !articles) history.push("/");
+  useEffect(() => {
+    if (!isFetchData || !articles) {
+      history.push("/");
+    }
+  }, [isFetchData, articles, history]);
 
   return (
-    <div className="detail-page">
+    <div className='detail-page'>
       {article && (
         <React.Fragment>
-          <i className='fa fa-arrow-left' onClick={() => history.push("/")}></i>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            className='arrow-icon'
+            onClick={() => history.push("/")}
+          />
           <DetailItem
             imageUrl={findImageUrl(article)}
             header={article.headline.main}

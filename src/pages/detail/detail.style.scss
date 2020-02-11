@@ -1,7 +1,7 @@
 .detail-page {
-  i {
+  & .arrow-icon {
     font-size: 250%;
-    color: yellowgreen;
+    color: rgb(63, 205, 50);
     position: fixed;
     left: 7%;
     cursor: pointer;
@@ -13,8 +13,9 @@
     @media screen and(min-width: 1366px) {
       left: 22%;
     }
-  }
-  i:hover {
-   font-weight: bold;
+
+    &:hover{
+      color: rgb(62, 141, 55);
+    }
   }
 }
