@@ -2,7 +2,11 @@ import { all, put, call, takeLatest, delay } from "redux-saga/effects";
 import { CANCEL } from "redux-saga";
 import axios, { CancelToken } from "axios";
 
-import { FetchApiSuccess, FetchApiFalure } from "./nyt-action";
+import {
+  FetchApiSuccess,
+  FetchApiFalure,
+  FetchNextPageSuccess
+} from "./nyt-action";
 import * as TYPE from "./nyt-type";
 import { NYT_API_KEY } from "../../Config";
 
@@ -13,7 +17,7 @@ function fetchAPI(url) {
   return request;
 }
 
-function* apiProcess({ payload }) {
+function* apiProcess(payload) {
   try {
     const buildURLQuery = obj => {
       return Object.entries(obj)
@@ -27,6 +31,7 @@ function* apiProcess({ payload }) {
       facet_fields: "source",
       facet_filter: "true",
       fq: `document_type:("article")`,
+      page: payload.page || 0,
       q: payload.searchString,
       sort: payload.option || "newest",
       "api-key": NYT_API_KEY
@@ -34,21 +39,53 @@ function* apiProcess({ payload }) {
     url += `?${buildURLQuery(query)}`;
 
     const response = yield fetchAPI(url);
-    const data = response.data.response.docs;
+    return response.data.response.docs;
+  } catch (error) {
+    throw error;
+  }
+}
+
+function* onFetchData({ payload }) {
+  try {
+    const search = {
+      searchString: payload.searchString,
+      option: payload.option
+    };
+
+    const data = yield apiProcess(search);
     yield put(FetchApiSuccess(data));
   } catch (error) {
     yield put(FetchApiFalure(error.message));
   }
 }
 
+function* onFetchNextPage({ payload }) {
+  try {
+    const search = {
+      searchString: payload.searchString,
+      option: payload.option,
+      page: payload.page
+    };
+
+    const data = yield apiProcess(search);
+    yield put(FetchNextPageSuccess(data));
+  } catch (error) {
+    yield put(FetchApiFalure(error.message));
+  }
+}
+
 // handle saga function
-function* onFetchApiStart() {
+function* takeOnFetchApiStart() {
   yield takeLatest(TYPE.FECTH_API_START, function*(props) {
     yield delay(1000);
-    yield apiProcess(props);
+    yield onFetchData(props);
   });
 }
 
+function* takeOnFetchNextPage() {
+  yield takeLatest(TYPE.FETCH_API_NEXT_PAGE_START, onFetchNextPage);
+}
+
 export function* NewYorkSaga() {
-  yield all([call(onFetchApiStart)]);
+  yield all([call(takeOnFetchApiStart), call(takeOnFetchNextPage)]);
 }

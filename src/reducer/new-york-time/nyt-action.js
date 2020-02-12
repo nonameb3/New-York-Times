@@ -20,3 +20,17 @@ export const FetchApiFalure = message => {
     payload: message
   }
 }
+
+export const FetchNextPageStart = (searchString, option, page) => {
+  return {
+    type: TYPE.FETCH_API_NEXT_PAGE_START,
+    payload: {searchString, option, page}
+  };
+};
+
+export const FetchNextPageSuccess = data => {
+  return {
+    type: TYPE.FETCH_API_NEXT_PAGE_SUCCESS,
+    payload: data
+  };
+};
