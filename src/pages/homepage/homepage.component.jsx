@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
@@ -23,34 +23,39 @@ function shouldRenderWarning(isDevmode = false) {
 }
 
 function shouldRenderCartItem(articles = [], history) {
-  if (!articles.length) return <div>Not have any articles.</div>;
+  let cardItem = {};
+  articles.forEach(article => {
+    const props = {
+      key: article._id,
+      image: findImageUrl(article),
+      header: article.headline.main,
+      date: article.pub_date,
+      source: article.source,
+      info: article.snippet,
+      onClick: () => history.push(`/detail?id=${article._id}`)
+    };
 
-  return articles.map(article => (
-    <CardItem
-      key={article._id}
-      image={findImageUrl(article)}
-      header={article.headline.main}
-      date={article.pub_date}
-      source={article.source}
-      info={article.snippet}
-      onClick={() => history.push(`/detail?id=${article._id}`)}
-    />
-  ));
+    cardItem[article._id] = <CardItem {...props} />;
+  });
+
+  // validate same id of data
+  return Object.values(cardItem);
 }
 
+const visibleStyles = {
+  opacity: 1,
+  fontSize: "2.5rem",
+  marginTop: "5rem",
+  position: "absolute"
+};
+const hiddenStyles = { opacity: 0 };
 const initNewest = "newest";
 const initOldest = "oldest";
 function HomepageComponent() {
   const didMountRef = useRef(false);
   const history = useHistory();
   const dispatch = useDispatch();
-  const {
-    isLoading,
-    articles,
-    searchOption,
-    isNewOpen,
-    isNextPageLoading
-  } = useSelector(
+  const store = useSelector(
     createStructuredSelector({
       isLoading: SELECTOR.selectIsLoading,
       isNewOpen: SELECTOR.selectIsNewOpen,
@@ -61,8 +66,8 @@ function HomepageComponent() {
   );
 
   const [state, setState] = useState({
-    searchString: searchOption.searchString,
-    sortBy: searchOption.option
+    searchString: store.searchOption.searchString,
+    sortBy: store.searchOption.option
   });
 
   // rold same as componentDidMount + componentDiDUpdate
@@ -76,59 +81,69 @@ function HomepageComponent() {
   useEffect(() => {
     if (!didMountRef.current) {
       didMountRef.current = true;
-      if (isNewOpen) dispatch(ACTION.FetchApiStart("", initNewest));
+      if (store.isNewOpen) dispatch(ACTION.FetchApiStart("", initNewest));
     }
-  }, [dispatch, isNewOpen]);
+  }, [dispatch, store.isNewOpen]);
 
-  const onShowMoreClick = () =>
-    dispatch(
-      ACTION.FetchNextPageStart(state.searchString, state.sortBy, ++searchOption.page)
-    );
+  const reanderCard = useCallback(
+    () => shouldRenderCartItem(store.articles, history),
+    [store.articles, history]
+  );
+
+  const onShowMoreClick = useCallback(
+    () =>
+      dispatch(
+        ACTION.FetchNextPageStart(
+          state.searchString,
+          state.sortBy,
+          store.searchOption.page + 1
+        )
+      ),
+    [dispatch,state, store.searchOption.page]
+  );
 
   return (
-    <div className="homepage">
-      <div className="tools">
-        <div className="tools search-box">
-          <label htmlFor="search">Search</label>
-          <FontAwesomeIcon icon={faSearch} className="search-icon" />
+    <div className='homepage'>
+      <div className='tools'>
+        <div className='tools search-box'>
+          <label htmlFor='search'>Search</label>
+          <FontAwesomeIcon icon={faSearch} className='search-icon' />
           <input
-            id="search"
-            type="search"
+            id='search'
+            type='search'
             onChange={e => setState({ ...state, searchString: e.target.value })}
             value={state.searchString}
           />
         </div>
 
-        <div className="tools select">
+        <div className='tools select'>
           <label
             className={`tools select ${
               state.sortBy === "newest" ? "active" : null
             }`}
-            onClick={() => setState({ ...state, sortBy: initNewest })}
-          >
+            onClick={() => setState({ ...state, sortBy: initNewest })}>
             Newest
           </label>
           <label
             className={`tools select ${
               state.sortBy !== "newest" ? "active" : null
             }`}
-            onClick={() => setState({ ...state, sortBy: initOldest })}
-          >
+            onClick={() => setState({ ...state, sortBy: initOldest })}>
             Oldest
           </label>
         </div>
       </div>
-      <div className="items-container">
+      <div className='items-container'>
         {shouldRenderWarning(process.env.NODE_ENV === "development")}
-        {isLoading ? (
-          <LoadingIcon style={{ fontSize: "2.5rem", marginTop: "5rem" }} />
-        ) : (
-          shouldRenderCartItem(articles, history)
-        )}
+        <LoadingIcon style={store.isLoading ? visibleStyles : hiddenStyles} />
+        <div style={!store.isLoading && !store.articles.length ? {} : hiddenStyles}>Not have any articles.</div>
+        {reanderCard()}
       </div>
-      {articles.length > 1 && (
-        <Loadmore onClickFn={onShowMoreClick} isLoading={isNextPageLoading} />
-      )}
+      <Loadmore
+        onClickFn={onShowMoreClick}
+        isLoading={store.isNextPageLoading}
+        isVisible={store.articles.length >= 1}
+      />
     </div>
   );
 }

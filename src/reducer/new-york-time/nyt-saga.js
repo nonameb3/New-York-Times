@@ -62,7 +62,11 @@ function* onFetchNextPage({ payload }) {
       option: payload.option,
       page: payload.page
     };
-
+    if (search.page >= 99) {
+      yield delay(2000);
+      yield put(FetchNextPageSuccess([]));
+      return;
+    }
     const data = yield apiProcess(search);
     yield put(FetchNextPageSuccess(data));
   } catch (error) {
