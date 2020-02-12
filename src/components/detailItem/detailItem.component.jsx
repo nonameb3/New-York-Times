@@ -1,6 +1,5 @@
 import React from "react";
 import moment from "moment";
-import "moment/locale/th";
 import "./detailItem.style.scss";
 
 import breakingImage from "../../assets/image/breaking.png";
@@ -43,7 +42,7 @@ function DetailItemComponent(props) {
         <p>{paragraph === abstract ? null : paragraph}</p>
         {shouldRenderHyperlink(webUrl)}
         <p className='detail footer'>
-          Source by: {source}
+          {source ? `Source by: ${source}` : ''}
           <span>{original}</span>
         </p>
       </div>

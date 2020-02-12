@@ -27,10 +27,6 @@ function* apiProcess(payload) {
 
     let url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     const query = {
-      facet: "true",
-      facet_fields: "source",
-      facet_filter: "true",
-      fq: `document_type:("article")`,
       page: payload.page || 0,
       q: payload.searchString,
       sort: payload.option || "newest",

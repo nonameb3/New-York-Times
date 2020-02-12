@@ -62,8 +62,7 @@ function HomepageComponent() {
 
   const [state, setState] = useState({
     searchString: searchOption.searchString,
-    sortBy: searchOption.option,
-    page: searchOption.page
+    sortBy: searchOption.option
   });
 
   // rold same as componentDidMount + componentDiDUpdate
@@ -83,7 +82,7 @@ function HomepageComponent() {
 
   const onShowMoreClick = () =>
     dispatch(
-      ACTION.FetchNextPageStart(state.searchString, state.sortBy, ++state.page)
+      ACTION.FetchNextPageStart(state.searchString, state.sortBy, ++searchOption.page)
     );
 
   return (

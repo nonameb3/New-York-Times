@@ -1,10 +1,13 @@
 import React from "react";
 import moment from "moment";
-import 'moment/locale/th';
 import "./carditem.style.scss";
 
 function cardItemComponens({ image, header, date, source, info, onClick }) {
-  const dateString = moment(date).format("DD/MM/YYYY HH:mm");
+  const timeDiff = moment().diff(moment(date), 'minutes',false);
+  let dateString = moment(date).format("DD/MM/YYYY HH:mm");
+  if (timeDiff <= 60 && timeDiff > 0) {
+    dateString = moment(date).fromNow();
+  }
 
   return (
     <div className='item-float'>
@@ -16,7 +19,7 @@ function cardItemComponens({ image, header, date, source, info, onClick }) {
           {header}
         </span>
         <span className='item-contents date'>
-          {dateString} - {source}
+          {`${dateString}  ${source ? ' - '+source: ''}`}
         </span>
         <p>{info}</p>
       </div>
