@@ -1,7 +1,9 @@
 # New York Times App :snowflake:
+
 ## Exercise From 7 Peaks Software
 
 ## :grey_question: How to install & start react app
+
 - Make sure you have nodeJS && git in your pc.
 - Clone this repo
 - Create file name .env to root folder and add your New York times api key into your .env file.
@@ -11,6 +13,7 @@
   - npm start
 
 root folder:
+
 ```
 new york time App
 ├── README.md
@@ -25,9 +28,9 @@ new york time App
 ```
 
 .env file:
+
 ```
 REACT_APP_APIKEY=YOUR_NEWYORKTIMES_APIKEY
 ```
 
-  
 ## :exclamation: License - [MIT](./LICENSE)

@@ -1,9 +1,9 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 
 import NewYorkTimesReducer from './new-york-time/nyt-reducer';
 
 const reducer = combineReducers({
-  nytData: NewYorkTimesReducer
+  nytData: NewYorkTimesReducer,
 });
 
 export default reducer;

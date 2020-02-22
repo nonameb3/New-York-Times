@@ -1,29 +1,27 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { createStructuredSelector } from "reselect";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import "./homepage.style.scss";
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { createStructuredSelector } from 'reselect';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import './homepage.style.scss';
 
-import { NYT_API_KEY } from "../../Config";
-import * as ACTION from "../../reducer/new-york-time/nyt-action";
-import * as SELECTOR from "../../reducer/new-york-time/nyt-selector";
-import CardItem from "../../components/cardItem/cardItem.componens";
-import LoadingIcon from "../../components/loadingIcon/loadingIcon";
-import Loadmore from "../../components/loadmore/loadmore.component";
-import { findImageUrl } from "./homepage.utill";
+import { NYT_API_KEY } from '../../Config';
+import * as ACTION from '../../reducer/new-york-time/nyt-action';
+import * as SELECTOR from '../../reducer/new-york-time/nyt-selector';
+import CardItem from '../../components/cardItem/cardItem.componens';
+import LoadingIcon from '../../components/loadingIcon/loadingIcon';
+import Loadmore from '../../components/loadmore/loadmore.component';
+import { findImageUrl } from './homepage.utill';
 
 function shouldRenderWarning(isDevmode = false) {
-  if (!isDevmode) return;
+  if (!isDevmode) return null;
 
-  return NYT_API_KEY ? null : (
-    <div style={{ color: "red" }}>You do not set API-Key !!</div>
-  );
+  return NYT_API_KEY ? <div /> : <div style={{ color: 'red' }}>You do not set API-Key !!</div>;
 }
 
 function shouldRenderCartItem(articles = [], history) {
-  let cardItem = {};
+  const cardItem = {};
   articles.forEach(article => {
     const props = {
       key: article._id,
@@ -32,7 +30,7 @@ function shouldRenderCartItem(articles = [], history) {
       date: article.pub_date,
       source: article.source,
       info: article.snippet,
-      onClick: () => history.push(`/detail?id=${article._id}`)
+      onClick: () => history.push(`/detail?id=${article._id}`),
     };
 
     cardItem[article._id] = <CardItem {...props} />;
@@ -44,13 +42,13 @@ function shouldRenderCartItem(articles = [], history) {
 
 const visibleStyles = {
   opacity: 1,
-  fontSize: "2.5rem",
-  marginTop: "5rem",
-  position: "absolute"
+  fontSize: '2.5rem',
+  marginTop: '5rem',
+  position: 'absolute',
 };
 const hiddenStyles = { opacity: 0 };
-const initNewest = "newest";
-const initOldest = "oldest";
+const initNewest = 'newest';
+const initOldest = 'oldest';
 function HomepageComponent() {
   const didMountRef = useRef(false);
   const history = useHistory();
@@ -61,13 +59,13 @@ function HomepageComponent() {
       isNewOpen: SELECTOR.selectIsNewOpen,
       articles: SELECTOR.selectArticles,
       searchOption: SELECTOR.selectSearchOption,
-      isNextPageLoading: SELECTOR.selectIsNextPageLoading
+      isNextPageLoading: SELECTOR.selectIsNextPageLoading,
     })
   );
 
   const [state, setState] = useState({
     searchString: store.searchOption.searchString,
-    sortBy: store.searchOption.option
+    sortBy: store.searchOption.option,
   });
 
   // rold same as componentDidMount + componentDiDUpdate
@@ -77,66 +75,76 @@ function HomepageComponent() {
     dispatch(ACTION.FetchApiStart(state.searchString, state.sortBy));
   }, [dispatch, state]);
 
-  //handel on fist time loading
+  // handel on fist time loading
   useEffect(() => {
     if (!didMountRef.current) {
       didMountRef.current = true;
-      if (store.isNewOpen) dispatch(ACTION.FetchApiStart("", initNewest));
+      if (store.isNewOpen) dispatch(ACTION.FetchApiStart('', initNewest));
     }
   }, [dispatch, store.isNewOpen]);
 
-  const reanderCard = useCallback(
-    () => shouldRenderCartItem(store.articles, history),
-    [store.articles, history]
-  );
+  const reanderCard = useCallback(() => shouldRenderCartItem(store.articles, history), [
+    store.articles,
+    history,
+  ]);
 
   const onShowMoreClick = useCallback(
     () =>
       dispatch(
-        ACTION.FetchNextPageStart(
-          state.searchString,
-          state.sortBy,
-          store.searchOption.page + 1
-        )
+        ACTION.FetchNextPageStart(state.searchString, state.sortBy, store.searchOption.page + 1)
       ),
-    [dispatch,state, store.searchOption.page]
+    [dispatch, state, store.searchOption.page]
   );
 
+  function handleKeydown(e) {
+    e.preventDefault();
+  }
+
   return (
-    <div className='homepage'>
-      <div className='tools'>
-        <div className='tools search-box'>
-          <label htmlFor='search'>Search</label>
-          <FontAwesomeIcon icon={faSearch} className='search-icon' />
-          <input
-            id='search'
-            type='search'
-            onChange={e => setState({ ...state, searchString: e.target.value })}
-            value={state.searchString}
-          />
+    <div className="homepage">
+      <div className="tools">
+        <div className="tools search-box">
+          <label htmlFor="search">
+            Search
+            <div className="search content">
+              <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              <input
+                id="search"
+                type="search"
+                onChange={e => setState({ ...state, searchString: e.target.value })}
+                value={state.searchString}
+              />
+            </div>
+          </label>
         </div>
 
-        <div className='tools select'>
-          <label
-            className={`tools select ${
-              state.sortBy === "newest" ? "active" : null
-            }`}
-            onClick={() => setState({ ...state, sortBy: initNewest })}>
+        <div className="tools select">
+          <span
+            className={`tools select ${state.sortBy === 'newest' ? 'active' : null}`}
+            onClick={() => setState({ ...state, sortBy: initNewest })}
+            onKeyDown={handleKeydown}
+            role="button"
+            tabIndex="0"
+          >
             Newest
-          </label>
-          <label
-            className={`tools select ${
-              state.sortBy !== "newest" ? "active" : null
-            }`}
-            onClick={() => setState({ ...state, sortBy: initOldest })}>
+          </span>
+          <span
+            className={`tools select ${state.sortBy !== 'newest' ? 'active' : null}`}
+            onClick={() => setState({ ...state, sortBy: initOldest })}
+            onKeyDown={handleKeydown}
+            role="button"
+            tabIndex="0"
+          >
             Oldest
-          </label>
+          </span>
         </div>
       </div>
-      <div className='items-container'>
-        {shouldRenderWarning(process.env.NODE_ENV === "development")}
+      <div className="items-container">
+        {shouldRenderWarning(process.env.NODE_ENV === 'development')}
         <LoadingIcon style={store.isLoading ? visibleStyles : hiddenStyles} />
-        <div style={!store.isLoading && !store.articles.length ? {} : hiddenStyles}>Not have any articles.</div>
+        <div style={!store.isLoading && !store.articles.length ? {} : hiddenStyles}>
+          Not have any articles.
+        </div>
         {reanderCard()}
       </div>
       <Loadmore

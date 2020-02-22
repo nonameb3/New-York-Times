@@ -1,33 +1,18 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
 
 const nytData = state => state.nytData;
 
-export const selectArticles = createSelector(
-  [nytData],
-  nytData => nytData.articles
-);
+export const selectArticles = createSelector([nytData], nytstore => nytstore.articles);
 
-export const selectIsLoading = createSelector(
-  [nytData],
-  nytData => nytData.isLoading
-);
+export const selectIsLoading = createSelector([nytData], nytstore => nytstore.isLoading);
 
-export const selectIsFetchData = createSelector(
-  [nytData],
-  nytData => nytData.isFetchData
-);
+export const selectIsFetchData = createSelector([nytData], nytstore => nytstore.isFetchData);
 
-export const selectSearchOption = createSelector(
-  [nytData],
-  nytData => nytData.searchOption
-);
+export const selectSearchOption = createSelector([nytData], nytstore => nytstore.searchOption);
 
-export const selectIsNewOpen = createSelector(
-  [nytData],
-  nytData => nytData.isNewOpen
-);
+export const selectIsNewOpen = createSelector([nytData], nytstore => nytstore.isNewOpen);
 
 export const selectIsNextPageLoading = createSelector(
   [nytData],
-  nytData => nytData.isNextPageLoading
+  nytstore => nytstore.isNextPageLoading
 );

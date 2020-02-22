@@ -1,4 +1,4 @@
-import * as TYPE from "./nyt-type";
+import * as TYPE from './nyt-type';
 
 const INITIAL_STATE = {
   isNewOpen: true,
@@ -6,11 +6,11 @@ const INITIAL_STATE = {
   isNextPageLoading: false,
   isFetchData: false,
   searchOption: {
-    searchString:"",
-    option:"newest",
-    page:0
+    searchString: '',
+    option: 'newest',
+    page: 0,
   },
-  articles: []
+  articles: [],
 };
 
 export default function(state = INITIAL_STATE, action) {
@@ -21,36 +21,36 @@ export default function(state = INITIAL_STATE, action) {
         ...state,
         isLoading: true,
         isLoadingNextPage: false,
-        articles:[],
-        searchOption: { ...state.searchOption, ...action.payload, page:0 }
-      }
+        articles: [],
+        searchOption: { ...state.searchOption, ...action.payload, page: 0 },
+      };
     case TYPE.FECTH_API_SUCCESS:
       return {
         ...state,
         articles: action.payload,
         isLoading: false,
         isNewOpen: false,
-        isFetchData: true
+        isFetchData: true,
       };
     case TYPE.FECTH_API_FAILURE:
       return {
         ...state,
         articles: [],
         isLoading: false,
-        isNextPageLoading: false
+        isNextPageLoading: false,
       };
     case TYPE.FETCH_API_NEXT_PAGE_START: {
       return {
         ...state,
         searchOption: action.payload,
-        isNextPageLoading: true
-      }
+        isNextPageLoading: true,
+      };
     }
     case TYPE.FETCH_API_NEXT_PAGE_SUCCESS:
       return {
         ...state,
         articles: [...state.articles, ...action.payload],
-        isNextPageLoading: false
+        isNextPageLoading: false,
       };
     default:
       return state;

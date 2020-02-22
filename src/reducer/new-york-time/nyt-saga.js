@@ -1,14 +1,10 @@
-import { all, put, call, takeLatest, delay } from "redux-saga/effects";
-import { CANCEL } from "redux-saga";
-import axios, { CancelToken } from "axios";
+import { all, put, call, takeLatest, delay } from 'redux-saga/effects';
+import { CANCEL } from 'redux-saga';
+import axios, { CancelToken } from 'axios';
 
-import {
-  FetchApiSuccess,
-  FetchApiFalure,
-  FetchNextPageSuccess
-} from "./nyt-action";
-import * as TYPE from "./nyt-type";
-import { NYT_API_KEY } from "../../Config";
+import { FetchApiSuccess, FetchApiFalure, FetchNextPageSuccess } from './nyt-action';
+import * as TYPE from './nyt-type';
+import { NYT_API_KEY } from '../../Config';
 
 function fetchAPI(url) {
   const source = CancelToken.source();
@@ -18,34 +14,30 @@ function fetchAPI(url) {
 }
 
 function* apiProcess(payload) {
-  try {
-    const buildURLQuery = obj => {
-      return Object.entries(obj)
-        .map(pair => pair.map(encodeURIComponent).join("="))
-        .join("&");
-    };
+  const buildURLQuery = obj => {
+    return Object.entries(obj)
+      .map(pair => pair.map(encodeURIComponent).join('='))
+      .join('&');
+  };
 
-    let url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-    const query = {
-      page: payload.page || 0,
-      q: payload.searchString,
-      sort: payload.option || "newest",
-      "api-key": NYT_API_KEY
-    };
-    url += `?${buildURLQuery(query)}`;
+  let url = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
+  const query = {
+    page: payload.page || 0,
+    q: payload.searchString,
+    sort: payload.option || 'newest',
+    'api-key': NYT_API_KEY,
+  };
+  url += `?${buildURLQuery(query)}`;
 
-    const response = yield fetchAPI(url);
-    return response.data.response.docs;
-  } catch (error) {
-    throw error;
-  }
+  const response = yield fetchAPI(url);
+  return response.data.response.docs;
 }
 
 function* onFetchData({ payload }) {
   try {
     const search = {
       searchString: payload.searchString,
-      option: payload.option
+      option: payload.option,
     };
 
     const data = yield apiProcess(search);
@@ -60,7 +52,7 @@ function* onFetchNextPage({ payload }) {
     const search = {
       searchString: payload.searchString,
       option: payload.option,
-      page: payload.page
+      page: payload.page,
     };
     if (search.page >= 99) {
       yield delay(2000);
@@ -76,7 +68,7 @@ function* onFetchNextPage({ payload }) {
 
 // handle saga function
 function* takeOnFetchApiStart() {
-  yield takeLatest(TYPE.FECTH_API_START, function*(props) {
+  yield takeLatest(TYPE.FECTH_API_START, function* handleDeley(props) {
     yield delay(1000);
     yield onFetchData(props);
   });
@@ -86,6 +78,8 @@ function* takeOnFetchNextPage() {
   yield takeLatest(TYPE.FETCH_API_NEXT_PAGE_START, onFetchNextPage);
 }
 
-export function* NewYorkSaga() {
+function* NewYorkSaga() {
   yield all([call(takeOnFetchApiStart), call(takeOnFetchNextPage)]);
 }
+
+export default NewYorkSaga;
