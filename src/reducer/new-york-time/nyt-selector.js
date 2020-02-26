@@ -6,8 +6,6 @@ export const selectArticles = createSelector([nytData], nytstore => nytstore.art
 
 export const selectIsLoading = createSelector([nytData], nytstore => nytstore.isLoading);
 
-export const selectIsFetchData = createSelector([nytData], nytstore => nytstore.isFetchData);
-
 export const selectSearchOption = createSelector([nytData], nytstore => nytstore.searchOption);
 
 export const selectIsNewOpen = createSelector([nytData], nytstore => nytstore.isNewOpen);

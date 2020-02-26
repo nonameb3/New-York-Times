@@ -40,13 +40,6 @@ function shouldRenderCartItem(articles = [], history) {
   return Object.values(cardItem);
 }
 
-const visibleStyles = {
-  opacity: 1,
-  fontSize: '2.5rem',
-  marginTop: '5rem',
-  position: 'absolute',
-};
-const hiddenStyles = { opacity: 0 };
 const initNewest = 'newest';
 const initOldest = 'oldest';
 function HomepageComponent() {
@@ -55,11 +48,10 @@ function HomepageComponent() {
   const dispatch = useDispatch();
   const store = useSelector(
     createStructuredSelector({
-      isLoading: SELECTOR.selectIsLoading,
       isNewOpen: SELECTOR.selectIsNewOpen,
+      isLoading: SELECTOR.selectIsLoading,
       articles: SELECTOR.selectArticles,
       searchOption: SELECTOR.selectSearchOption,
-      isNextPageLoading: SELECTOR.selectIsNextPageLoading,
     })
   );
 
@@ -83,7 +75,7 @@ function HomepageComponent() {
     }
   }, [dispatch, store.isNewOpen]);
 
-  const reanderCard = useCallback(() => shouldRenderCartItem(store.articles, history), [
+  const renderCard = useCallback(() => shouldRenderCartItem(store.articles, history), [
     store.articles,
     history,
   ]);
@@ -140,18 +132,11 @@ function HomepageComponent() {
         </div>
       </div>
       <div className="items-container">
-        {shouldRenderWarning(process.env.NODE_ENV === 'development')}
-        <LoadingIcon style={store.isLoading ? visibleStyles : hiddenStyles} />
-        <div style={!store.isLoading && !store.articles.length ? {} : hiddenStyles}>
-          Not have any articles.
-        </div>
-        {reanderCard()}
+        {process.env.NODE_ENV === 'development' && shouldRenderWarning()}
+        {store.isLoading && <LoadingIcon className="fa-spin loading-icon" />}
+        {renderCard()}
       </div>
-      <Loadmore
-        onClickFn={onShowMoreClick}
-        isLoading={store.isNextPageLoading}
-        isVisible={store.articles.length >= 1}
-      />
+      <Loadmore onClickFn={onShowMoreClick} />
     </div>
   );
 }

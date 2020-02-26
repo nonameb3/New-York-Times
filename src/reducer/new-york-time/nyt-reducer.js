@@ -4,7 +4,6 @@ const INITIAL_STATE = {
   isNewOpen: true,
   isLoading: false,
   isNextPageLoading: false,
-  isFetchData: false,
   searchOption: {
     searchString: '',
     option: 'newest',
@@ -30,7 +29,6 @@ export default function(state = INITIAL_STATE, action) {
         articles: action.payload,
         isLoading: false,
         isNewOpen: false,
-        isFetchData: true,
       };
     case TYPE.FECTH_API_FAILURE:
       return {

@@ -6,7 +6,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import queryString from 'query-string';
 import './detail.style.scss';
 
-import { selectArticles, selectIsFetchData } from '../../reducer/new-york-time/nyt-selector';
+import { selectArticles } from '../../reducer/new-york-time/nyt-selector';
 import DetailItem from '../../components/detailItem/detailItem.component';
 
 import findImageUrl from './detail.utill';
@@ -14,19 +14,16 @@ import findImageUrl from './detail.utill';
 function DetailComponent() {
   const history = useHistory();
   const location = useLocation();
-  const { isFetchData, articles } = useSelector(state => ({
-    isFetchData: selectIsFetchData(state),
-    articles: selectArticles(state),
-  }));
+  const articles = useSelector(state => selectArticles(state));
   const values = queryString.parse(location.search);
   const article = articles.find(listArticle => listArticle._id === values.id);
 
   // return to homepage if not fetch api or can't find articles
   useEffect(() => {
-    if (!isFetchData || !articles) {
+    if (!articles.length) {
       history.push('/');
     }
-  }, [isFetchData, articles, history]);
+  }, [articles, history]);
 
   return (
     <div className="detail-page">
