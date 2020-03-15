@@ -1,14 +1,12 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { createStructuredSelector } from 'reselect';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import './homepage.style.scss';
 
+import useUIState from './homepage.useUIState';
 import { NYT_API_KEY } from '../../Config';
-import * as ACTION from '../../reducer/new-york-time/nyt-action';
-import * as SELECTOR from '../../reducer/new-york-time/nyt-selector';
 import CardItem from '../../components/cardItem/cardItem.componens';
 import LoadingIcon from '../../components/loadingIcon/loadingIcon';
 import Loadmore from '../../components/loadmore/loadmore.component';
@@ -16,77 +14,37 @@ import { findImageUrl } from './homepage.utill';
 
 function shouldRenderWarning(isDevmode = false) {
   if (!isDevmode) return null;
-
   return NYT_API_KEY ? <div /> : <div style={{ color: 'red' }}>You do not set API-Key !!</div>;
 }
 
 function shouldRenderCartItem(articles = [], history) {
   const cardItem = {};
   articles.forEach(article => {
-    const props = {
-      key: article._id,
-      image: findImageUrl(article),
-      header: article.headline.main,
-      date: article.pub_date,
-      source: article.source,
-      info: article.snippet,
-      onClick: () => history.push(`/detail?id=${article._id}`),
-    };
-
-    cardItem[article._id] = <CardItem {...props} />;
+    cardItem[article._id] = (
+      <CardItem
+        key={article._id}
+        image={findImageUrl(article)}
+        header={article.headline.main}
+        date={article.pub_date}
+        source={article.source}
+        info={article.snippet}
+        onClick={() => history.push(`/detail?id=${article._id}`)}
+      />
+    );
   });
 
-  // validate same id of data
   return Object.values(cardItem);
 }
 
 const initNewest = 'newest';
 const initOldest = 'oldest';
-function HomepageComponent() {
-  const didMountRef = useRef(false);
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const store = useSelector(
-    createStructuredSelector({
-      isNewOpen: SELECTOR.selectIsNewOpen,
-      isLoading: SELECTOR.selectIsLoading,
-      articles: SELECTOR.selectArticles,
-      searchOption: SELECTOR.selectSearchOption,
-    })
-  );
+function HomepageComponent({ history, isLoading, articles, fetchNextPage }) {
+  const [uiState, handleOnChange, handleOnClick] = useUIState();
 
-  const [state, setState] = useState({
-    searchString: store.searchOption.searchString,
-    sortBy: store.searchOption.option,
-  });
-
-  // rold same as componentDidMount + componentDiDUpdate
-  // handel when state change
-  useEffect(() => {
-    if (!didMountRef.current) return;
-    dispatch(ACTION.FetchApiStart(state.searchString, state.sortBy));
-  }, [dispatch, state]);
-
-  // handel on fist time loading
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      if (store.isNewOpen) dispatch(ACTION.FetchApiStart('', initNewest));
-    }
-  }, [dispatch, store.isNewOpen]);
-
-  const renderCard = useCallback(() => shouldRenderCartItem(store.articles, history), [
-    store.articles,
-    history,
-  ]);
-
-  const onShowMoreClick = useCallback(
-    () =>
-      dispatch(
-        ACTION.FetchNextPageStart(state.searchString, state.sortBy, store.searchOption.page + 1)
-      ),
-    [dispatch, state, store.searchOption.page]
-  );
+  function onShowMoreClick(e) {
+    e.preventDefault();
+    fetchNextPage(uiState);
+  }
 
   function handleKeydown(e) {
     e.preventDefault();
@@ -103,8 +61,9 @@ function HomepageComponent() {
               <input
                 id="search"
                 type="search"
-                onChange={e => setState({ ...state, searchString: e.target.value })}
-                value={state.searchString}
+                name="searchString"
+                onChange={handleOnChange}
+                value={uiState.searchString}
               />
             </div>
           </label>
@@ -112,8 +71,8 @@ function HomepageComponent() {
 
         <div className="tools select">
           <span
-            className={`tools select ${state.sortBy === 'newest' ? 'active' : null}`}
-            onClick={() => setState({ ...state, sortBy: initNewest })}
+            className={`tools select ${uiState.option === 'newest' ? 'active' : null}`}
+            onClick={() => handleOnClick(initNewest)}
             onKeyDown={handleKeydown}
             role="button"
             tabIndex="0"
@@ -121,8 +80,8 @@ function HomepageComponent() {
             Newest
           </span>
           <span
-            className={`tools select ${state.sortBy !== 'newest' ? 'active' : null}`}
-            onClick={() => setState({ ...state, sortBy: initOldest })}
+            className={`tools select ${uiState.option !== 'newest' ? 'active' : null}`}
+            onClick={() => handleOnClick(initOldest)}
             onKeyDown={handleKeydown}
             role="button"
             tabIndex="0"
@@ -133,12 +92,19 @@ function HomepageComponent() {
       </div>
       <div className="items-container">
         {process.env.NODE_ENV === 'development' && shouldRenderWarning()}
-        {store.isLoading && <LoadingIcon className="fa-spin loading-icon" />}
-        {renderCard()}
+        {isLoading && <LoadingIcon className="fa-spin loading-icon" />}
+        {shouldRenderCartItem(articles, history)}
       </div>
       <Loadmore onClickFn={onShowMoreClick} />
     </div>
   );
 }
+
+HomepageComponent.propTypes = {
+  history: ReactRouterPropTypes.history.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  articles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  fetchNextPage: PropTypes.func.isRequired,
+};
 
 export default HomepageComponent;

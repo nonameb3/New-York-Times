@@ -1,9 +1,8 @@
 import * as TYPE from './nyt-type';
 
-export const FetchApiStart = (searchString, option) => {
+export const FetchApiStart = () => {
   return {
     type: TYPE.FECTH_API_START,
-    payload: { searchString, option },
   };
 };
 
@@ -21,7 +20,7 @@ export const FetchApiFalure = message => {
   };
 };
 
-export const FetchNextPageStart = (searchString, option, page) => {
+export const FetchNextPageStart = ({ searchString, option, page }) => {
   return {
     type: TYPE.FETCH_API_NEXT_PAGE_START,
     payload: { searchString, option, page },
@@ -32,5 +31,12 @@ export const FetchNextPageSuccess = data => {
   return {
     type: TYPE.FETCH_API_NEXT_PAGE_SUCCESS,
     payload: data,
+  };
+};
+
+export const ChangeUIState = state => {
+  return {
+    type: TYPE.CHANGE_UI_STATE,
+    payload: state,
   };
 };

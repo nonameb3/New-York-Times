@@ -8,10 +8,10 @@ import { selectIsNextPageLoading, selectArticles } from '../../reducer/new-york-
 
 function LoadmoreComponent({ onClickFn }) {
   const isLoading = useSelector(state => selectIsNextPageLoading(state));
-  const isHasActicles = useSelector(state => selectArticles(state));
+  const acticles = useSelector(state => selectArticles(state));
 
   return (
-    <div className={`showmore-layout ${isHasActicles.length ? '' : 'hidden'}`}>
+    <div className={`showmore-layout ${acticles.length ? '' : 'hidden'}`}>
       {isLoading === true ? (
         <LoadingIcon className="fa-spin loading-icon" />
       ) : (

@@ -1,8 +1,8 @@
-import { all, put, call, takeLatest, delay } from 'redux-saga/effects';
+import { all, put, call, takeLatest, delay, select } from 'redux-saga/effects';
 import { CANCEL } from 'redux-saga';
 import axios, { CancelToken } from 'axios';
 
-import { FetchApiSuccess, FetchApiFalure, FetchNextPageSuccess } from './nyt-action';
+import { FetchApiSuccess, FetchApiFalure, FetchNextPageSuccess, FetchApiStart } from './nyt-action';
 import * as TYPE from './nyt-type';
 import { NYT_API_KEY } from '../../Config';
 
@@ -33,33 +33,27 @@ function* apiProcess(payload) {
   return response.data.response.docs;
 }
 
-function* onFetchData({ payload }) {
+function* onFetchData() {
   try {
-    const search = {
-      searchString: payload.searchString,
-      option: payload.option,
-    };
+    const uiState = yield select(state => state.nytData.uiState);
 
-    const data = yield apiProcess(search);
+    const data = yield apiProcess(uiState);
     yield put(FetchApiSuccess(data));
   } catch (error) {
     yield put(FetchApiFalure(error.message));
   }
 }
 
-function* onFetchNextPage({ payload }) {
+function* onFetchNextPage() {
   try {
-    const search = {
-      searchString: payload.searchString,
-      option: payload.option,
-      page: payload.page,
-    };
-    if (search.page >= 99) {
+    const uiState = yield select(state => state.nytData.uiState);
+
+    if (uiState.page >= 99) {
       yield delay(2000);
       yield put(FetchNextPageSuccess([]));
       return;
     }
-    const data = yield apiProcess(search);
+    const data = yield apiProcess(uiState);
     yield put(FetchNextPageSuccess(data));
   } catch (error) {
     yield put(FetchApiFalure(error.message));
@@ -67,8 +61,14 @@ function* onFetchNextPage({ payload }) {
 }
 
 // handle saga function
+function* takeOnUIStateChange() {
+  yield takeLatest(TYPE.CHANGE_UI_STATE, function* handleDelay() {
+    yield put(FetchApiStart());
+  });
+}
+
 function* takeOnFetchApiStart() {
-  yield takeLatest(TYPE.FECTH_API_START, function* handleDeley(props) {
+  yield takeLatest(TYPE.FECTH_API_START, function* handleDelay(props) {
     yield delay(1000);
     yield onFetchData(props);
   });
@@ -79,7 +79,7 @@ function* takeOnFetchNextPage() {
 }
 
 function* NewYorkSaga() {
-  yield all([call(takeOnFetchApiStart), call(takeOnFetchNextPage)]);
+  yield all([call(takeOnFetchApiStart), call(takeOnFetchNextPage), call(takeOnUIStateChange)]);
 }
 
 export default NewYorkSaga;
