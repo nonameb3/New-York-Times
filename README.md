@@ -2,6 +2,14 @@
 
 ## Exercise From 7 Peaks Software
 
+<p align="center">
+    <img src="/image/home-min.png" width="800">
+</p>
+
+<p align="center">
+    <a href="https://new-york-time-waraphon.herokuapp.com">Live Website</a>
+</p>
+
 ## :grey_question: How to install & start react app
 
 - Make sure you have nodeJS && git in your pc.
